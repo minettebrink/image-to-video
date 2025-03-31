@@ -46,9 +46,9 @@ For this project you can fill the parameters except number of frames and , we us
 
 
 ### Example Output
-
+Will be added
 #### Input Image
-
+Will be added
 ## Getting Started
 
 Follow the steps below to deploy Image-to-Video converter to your Koyeb account.
