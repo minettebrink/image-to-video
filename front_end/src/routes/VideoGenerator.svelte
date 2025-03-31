@@ -1,18 +1,24 @@
 <script lang="ts">
     let prompt: string = '';
     let imageUrl: string = '';
-    let imageFile: File | null = null;
-    let seed: number | null = null;
-    let inferenceSteps: number | null = null;
-    let guidanceScale: number | null = null;
+    let inferenceSteps: number = 50;
+    let guidanceScale: number = 3;
     let loading: boolean = false;
-    let result: any = null;
     let error: string | null = null;
-    let inputMethod: 'url' | 'file' = 'url';
+    let negativePrompt: string = '';
+    let width: number = 704;
+    let height: number =  448;
+    let videoBlob: Blob | null = null;
+    let videoUrl: string | null = null;
 
     async function handleSubmit() {
         loading = true;
         error = null;
+        if (videoUrl) {
+            URL.revokeObjectURL(videoUrl);
+            videoUrl = null;
+            videoBlob = null;
+        }
         
         try {
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -22,64 +28,38 @@
 
             console.log('Using backend URL:', backendUrl);
 
-            const payload: any = {
-                prompt: prompt
+
+            // Create the request payload with exact parameter names
+            const payload = {
+                prompt: prompt,
+                negative_prompt: negativePrompt || null,
+                image_url: imageUrl,
+                num_inference_steps: inferenceSteps || null,
+                width: width || null,
+                height: height || null,
+                guidance_scale: guidanceScale || null
             };
 
-            if (inputMethod === 'url') {
-                payload.image_url = imageUrl;
-            } else if (imageFile) {
-                // Convert file to base64
-                const reader = new FileReader();
-                const base64Promise = new Promise((resolve, reject) => {
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                });
-                reader.readAsDataURL(imageFile);
-                const base64Data = await base64Promise;
-                payload.image_base64 = base64Data;
-            }
-
-            
-            if (seed !== null && seed !== undefined) {
-                payload.seed = seed;
-                console.log('Seed:', seed);
-            }
-            if (inferenceSteps !== null && inferenceSteps !== undefined) {
-                payload.inference_steps = inferenceSteps;
-                console.log('Inference Steps:', inferenceSteps);
-            }
-            if (guidanceScale !== null && guidanceScale !== undefined) {
-                payload.guidance_scale = guidanceScale;
-                console.log('Guidance Scale:', guidanceScale);
-            }
-
-            const url = `${backendUrl}/generate-video`;
-            console.log('Making request to:', url);
-
-            const response = await fetch(url, {
+            const response = await fetch(`${backendUrl}/generate-video`, {
                 method: 'POST',
-                body: JSON.stringify(payload),
                 headers: {
-                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(payload)
             });
 
+            
+
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server error response:', errorText);
-                let errorMessage = 'Failed to generate video';
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    errorMessage = errorJson.detail || errorMessage;
-                } catch (e) {
-                    errorMessage = errorText;
-                }
-                throw new Error(errorMessage);
+                console.log(response);
+                throw new Error(`Failed to generate video: ${response.statusText}`);
             }
 
-            result = await response.json();
+            // Handle binary video data directly
+            const videoData = await response.blob();
+            videoBlob = new Blob([videoData], { type: 'video/mp4' });
+            videoUrl = URL.createObjectURL(videoBlob);
+
         } catch (e) {
             error = e instanceof Error ? e.message : 'An unknown error occurred';
             console.error('Error details:', e);
@@ -87,130 +67,129 @@
             loading = false;
         }
     }
-
-    function handleFileChange(event: Event) {
-        const target = event.target as HTMLInputElement;
-        if (target.files && target.files[0]) {
-            imageFile = target.files[0];
-        }
-    }
 </script>
 
 <div class="container">
     <h1>Video Generator</h1>
     
-    <form on:submit|preventDefault={handleSubmit}>
-        <div class="form-group">
-            <label for="prompt">Prompt:</label>
-            <input 
-                id="prompt"
-                type="text" 
-                bind:value={prompt} 
-                required
-            />
-        </div>
-
-        <div class="form-group">
-            <fieldset>
-                <legend>Image Input Method:</legend>
-                <div class="radio-group">
-                    <label>
-                        <input 
-                            type="radio" 
-                            bind:group={inputMethod} 
-                            value="url"
-                        > URL
-                    </label>
-                    <label>
-                        <input 
-                            type="radio" 
-                            bind:group={inputMethod} 
-                            value="file"
-                        > File Upload
-                    </label>
+    <div class="layout-container">
+        <div class="form-section">
+            <form on:submit|preventDefault={handleSubmit}>
+                <div class="form-group">
+                    <label for="imageUrl">Image URL (only PNG images):</label>
+                    <input 
+                        id="imageUrl"
+                        type="url" 
+                        bind:value={imageUrl} 
+                        required
+                    />
                 </div>
-            </fieldset>
+
+                <div class="form-group">
+                    <label for="prompt">Prompt:</label>
+                    <textarea 
+                        id="prompt"
+                        bind:value={prompt} 
+                        required
+                        rows="3"
+                        placeholder="Write here what you want to happen in the video..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="negativePrompt">Negative Prompt:</label>
+                    <textarea 
+                        id="negativePrompt"
+                        bind:value={negativePrompt} 
+                        rows="3"
+                        placeholder="This field is optional. Write here what you don't want in the video..."
+                    ></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="width">Width:</label>
+                        <input 
+                            id="width"
+                            type="number" 
+                            bind:value={width} 
+                            min="64"
+                            step="64"
+                        />
+                    </div>
+
+                    <div class="form-group half">
+                        <label for="height">Height:</label>
+                        <input 
+                            id="height"
+                            type="number" 
+                            bind:value={height} 
+                            min="64"
+                            step="64"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="inferenceSteps">Number of Inference Steps:</label>
+                        <input 
+                            id="inferenceSteps"
+                            type="number" 
+                            bind:value={inferenceSteps} 
+                            min="1" 
+                            max="100"
+                        />
+                    </div>
+
+                    <div class="form-group half">
+                        <label for="guidanceScale">Guidance Scale:</label>
+                        <input 
+                            id="guidanceScale"
+                            type="number" 
+                            bind:value={guidanceScale} 
+                            step="0.1" 
+                            min="1" 
+                            max="20"
+                        />
+                    </div>
+                </div>
+
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Generating...' : 'Generate Video'}
+                </button>
+            </form>
+
+            {#if error}
+                <div class="error">
+                    {error}
+                </div>
+            {/if}
         </div>
 
-        {#if inputMethod === 'url'}
-            <div class="form-group">
-                <label for="imageUrl">Image URL:</label>
-                <input 
-                    id="imageUrl"
-                    type="url" 
-                    bind:value={imageUrl} 
-                    required
-                />
-            </div>
-        {:else}
-            <div class="form-group">
-                <label for="imageFile">Upload Image:</label>
-                <input 
-                    id="imageFile"
-                    type="file" 
-                    accept="image/jpeg,image/jpg"
-                    on:change={handleFileChange}
-                    required
-                />
-            </div>
-        {/if}
-
-        <div class="form-group">
-            <label for="seed">Seed (optional):</label>
-            <input 
-                id="seed"
-                type="number" 
-                bind:value={seed}
-            />
+        <div class="video-section">
+            {#if videoUrl}
+                <div class="video-container">
+                    <h2>Generated Video:</h2>
+                    <!-- svelte-ignore a11y-media-has-caption -->
+                    <video controls>
+                        <source src={videoUrl} type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <a href={videoUrl} download="generated-video.mp4" class="download-button">
+                        Download Video
+                    </a>
+                </div>
+            {/if}
         </div>
-
-        <div class="form-group">
-            <label for="inferenceSteps">Inference Steps (optional):</label>
-            <input 
-                id="inferenceSteps"
-                type="number" 
-                bind:value={inferenceSteps} 
-                min="1" 
-                max="100"
-            />
-        </div>
-
-        <div class="form-group">
-            <label for="guidanceScale">Guidance Scale (optional):</label>
-            <input 
-                id="guidanceScale"
-                type="number" 
-                bind:value={guidanceScale} 
-                step="0.1" 
-                min="1" 
-                max="20"
-            />
-        </div>
-
-        <button type="submit" disabled={loading}>
-            {loading ? 'Generating...' : 'Generate Video'}
-        </button>
-    </form>
-
-    {#if error}
-        <div class="error">
-            {error}
-        </div>
-    {/if}
-
-    {#if result}
-        <div class="result">
-            <h2>Generation Result:</h2>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
-        </div>
-    {/if}
+    </div>
 </div>
 
 <style>
     .container {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 2rem auto;
-        padding: 2rem;
+        padding: 3rem;
         background: white;
         border-radius: 12px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -225,8 +204,30 @@
         font-weight: 600;
     }
 
+    .layout-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    .form-section {
+        width: 100%;
+    }
+
+    .video-section {
+        width: 100%;
+        min-height: 200px; /* Ensures the right column exists even when empty */
+    }
+
+    .video-container {
+        position: sticky;
+        top: 2rem;
+        width: 100%;
+    }
+
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     label {
@@ -236,10 +237,8 @@
         font-weight: 500;
     }
 
-    input[type="text"],
     input[type="url"],
-    input[type="number"],
-    input[type="file"] {
+    input[type="number"] {
         width: 100%;
         padding: 0.75rem;
         border: 2px solid #e2e8f0;
@@ -252,38 +251,6 @@
         outline: none;
         border-color: #4b5563;
         box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
-    }
-
-    fieldset {
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0;
-    }
-
-    legend {
-        color: #2c3e50;
-        font-weight: 500;
-        padding: 0 0.5rem;
-    }
-
-    .radio-group {
-        display: flex;
-        gap: 2rem;
-        margin-top: 0.5rem;
-    }
-
-    .radio-group label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-        margin: 0;
-    }
-
-    .radio-group input[type="radio"] {
-        width: auto;
-        margin: 0;
     }
 
     button {
@@ -321,37 +288,101 @@
         border: 1px solid #fecaca;
     }
 
-    .result {
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background-color: #f8fafc;
+    video {
+        width: 100%;
+        max-width: 100%;
         border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        margin: 1rem 0;
     }
 
-    .result h2 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
+    .download-button {
+        display: inline-block;
+        background: #4b5563;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: background-color 0.2s;
     }
 
-    pre {
-        background-color: #1e293b;
-        color: #e2e8f0;
-        padding: 1rem;
+    .download-button:hover {
+        background: #374151;
+    }
+
+    @media (max-width: 1024px) {
+        .layout-container {
+            grid-template-columns: 1fr;
+        }
+
+        .video-container {
+            position: static;
+        }
+
+        .video-section {
+            min-height: auto;
+        }
+    }
+
+    textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
         border-radius: 8px;
-        overflow-x: auto;
-        font-size: 0.9rem;
+        transition: all 0.2s;
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #4b5563;
+        box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group.half {
+        margin-bottom: 0;
+    }
+
+    .form-group.half input[type="number"] {
+        width: 100px;  /* Set fixed width for numeric inputs in half groups */
+    }
+
+    /* Add this to ensure the labels don't force the containers to be too wide */
+    .form-group.half label {
+        white-space: nowrap;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Ensure the form-row containers align properly */
+    .form-row .form-group.half {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     @media (max-width: 640px) {
-        .container {
-            margin: 1rem;
-            padding: 1rem;
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
 
-        .radio-group {
-            flex-direction: column;
-            gap: 1rem;
+        .form-group.half {
+            margin-bottom: 1rem;
+        }
+
+        .form-group.half input[type="number"] {
+            width: 100%; /* Full width on mobile */
         }
     }
 </style>
