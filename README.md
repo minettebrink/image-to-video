@@ -46,14 +46,14 @@ For this project, you can fill in the parameters except the number of frames, an
 
 
 #### Input Image and Prompt
-[start_image.png!](demos/start_image.png)
+![start_image.png](demos/start_image.png)
 
 - **Prompt:** A golden-brown puppy runs across a green lawn, its small paws kicking up grass as it moves. Its ears bounce with each stride. Its dark eyes are focused ahead. In the slightly blurred background, the expanse of the lawn stretches out, bordered by dense foliage.
 - **Negative Prompt:** worst quality, inconsistent motion, blurry, jittery, distorted
 - **Other Parameters:** Defeault
 
 ### Example Output
-[generated-video.mp4!](demos/generated-video.mp4)
+![generated-video.mp4](demos/generated-video.mp4)
 
 ## Getting Started
 
