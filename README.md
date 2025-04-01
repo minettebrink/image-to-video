@@ -53,7 +53,7 @@ For this project, you can fill in the parameters except the number of frames, an
 - **Other Parameters:** Defeault
 
 ### Example Output
-![Watch the output on YouTube](https://youtu.be/GMcWAIBgbGY)
+[![Watch the output on YouTube](https://youtu.be/GMcWAIBgbGY)](https://youtu.be/GMcWAIBgbGY)
 
 ## Getting Started
 
