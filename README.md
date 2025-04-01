@@ -53,7 +53,7 @@ For this project, you can fill in the parameters except the number of frames, an
 - **Other Parameters:** Defeault
 
 ### Example Output
-[![generated-video.mp4](demos/start_image.png)](demos/generated-video.mp4)
+![Watch the output on YouTube](https://youtu.be/GMcWAIBgbGY)
 
 ## Getting Started
 
