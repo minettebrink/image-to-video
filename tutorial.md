@@ -1,4 +1,4 @@
-# Step-by-step Guide to Build a Image-to-Video Generator App
+# Guide to Deploy and Build a Image-to-Video Generator App
 
 Here, you can find information about how to deploy the app and how it was built.
 
