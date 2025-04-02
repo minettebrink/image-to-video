@@ -1,23 +1,6 @@
 # Step-by-step Guide to Build a Image-to-Video Generator App
 
-- setting up frontend sveltekit
-- setting upp backend fast api
-- connecting backend with frontend
-- added parameters
-- Tested deployment infra structur by dockerising front end and backend -didn’t work
-- Composed dockered frontend and backend
-- deployed on koyeb to test infrastructure pipeline. 
-    - Problem with port (didn’t have 0.0.0.0: on frontend or backend)
-    - Problem with a two small part of server
-    - Got the frontend part to work, didn’t connect to backend
-    - Cors problems
-    - Then worked
-- Backend done: 
-    - Model download works on koyeb
-    - Model start works on Koyeb
-    - Adding parameters to model 
-- Tryed with docker-compose.yml. Didn’t work, couldn’t find the model easily, python didn’t work in the console/shell and too many small bumps in the road
-- Used the docker file instead when i figured how ot redirect
+This is guide on how to deploy the model and how it was build.
 
 ## Getting Started
 
@@ -26,11 +9,11 @@ Follow the steps below to deploy an Image-to-Video converter to your Koyeb accou
 ## Requirements
 To use this repository, you need:
 - A Koyeb account to build the Dockerfile and deploy to the platform. If you don't already have an account, you can sign up for free, linkt to [sign up](https://app.koyeb.com/auth/signup)
-- Access to GPU Instances on Koyeb.
+- Access to CPU and GPU Instances on Koyeb.
 
 
 ### Running the Application
-Remember first to deploy the frontend and then the backend. 
+Remember first to deploy the frontend and then the backend. If you use the Deploy to Koyeb buttons, you can link your service to your forked repository to be able to push changes.
 
 #### Frontend
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-frontend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=front_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=small&regions=par&env%5BVITE_BACKEND_URL%5D=https%3A%2F%2Fhelpful-cloe-challenge-0065b024.koyeb.app&ports=5173%3Bhttp%3B%2F&hc_protocol%5B5173%5D=tcp&hc_grace_period%5B5173%5D=5&hc_interval%5B5173%5D=30&hc_restart_limit%5B5173%5D=3&hc_timeout%5B5173%5D=5&hc_path%5B5173%5D=%2F&hc_method%5B5173%5D=get)
@@ -39,9 +22,7 @@ Remember first to deploy the frontend and then the backend.
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-backend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=%2Fback_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=gpu-nvidia-l40s&regions=eu&instances_min=0&autoscaling_sleep_idle_delay=300&env%5BALLOWED_ORIGINS%5D=https%3A%2F%2Fmale-othilia-challenge-af621831.koyeb.app&hc_grace_period%5B8000%5D=900&hc_interval%5B8000%5D=60&hc_timeout%5B8000%5D=60)
 
 ## Deploy on Koyeb
-
-If you use the Deploy to Koyeb button, you can link your service to your forked repository to be able to push changes. Alternatively, you can manually create the application as described below.
-
+Alternatively, you can manually create the application as described below.
 
 
 When clicking Creat Service on your Koyeb account, then choose GitHub and add the link to your public GitHub repo. After choosing instance, click the Create Web Service button.
@@ -137,10 +118,54 @@ docker build -t  my-image-name .
 docker run -d -p 5173:5173 --name <app-name> 
 ```
 
+
+
+## Work flow
+1. Set up the frontend with Svelte 
+```
+pnpx sv create myapp
+cd myapp
+pnpm install
+pnpm run dev
+```
+2. set upp the backend FastApi
+```
+pip install "fastapi[standard]"
+```
+and to run it locally
+```
+fastapi dev main.py
+```
+3. Connect the backend with frontend
+4. Add parameters, a .mp4 file as the backend output to simulate the pipeline without the model. Run both backend and frontend locally, to see that everything works as you want.
+5. Dockerized frontend and backend separetlty and test that both `docker build` and `docker run` works for both front- and backend.
+6. Deployed frontend to Koyeb (follow these [instructions](#for-the-frontend)) and test that the frontend works as you want to.
+7. Deployed backend to Koyeb (follow these [instructions](#for-the-backend)) and test that the back- and frontend works as you want to.
+8. Download the model weights to the backend 
+```python
+from huggingface_hub import hf_hub_download
+hf_hub_download(repo_id="Lightricks/LTX-Video", filename="ltx-video-2b-v0.9.1.safetensors", local_dir="/models")
+```
+9. Test to download the modelwights by deploing the backend on Koyeb, and check that you find them by using the console.
+10. Load the model
+```python
+local_model_path = "/models/ltx-video-2b-v0.9.1.safetensors"
+transformer = LTXVideoTransformer3DModel.from_single_file(
+  local_model_path, torch_dtype=torch.bfloat16
+)
+vae = AutoencoderKLLTXVideo.from_single_file(local_model_path, torch_dtype=torch.bfloat16)
+pipe = LTXImageToVideoPipeline.from_pretrained(
+  "Lightricks/LTX-Video", transformer=transformer, vae=vae, torch_dtype=torch.bfloat16
+)
+pipe.to("cuda")
+```
+11. Test that the model loads correctly on Koyeb in console.
+12. If the model loads correctly in the console. Your good to go to test the web app.
+
 ## Troubleshooting
 
 Common issues and their solutions: 
-* **Port Conflicts**: Ensure ports backend and 5173 (frontend) are available and that the frontend and backend URLs are correct
+* **Port Conflicts**: Ensure ports backend and 5173 (frontend) are available and public and that the frontend and backend URLs are correct
 * **Two or more requests** : If there are two or more requests at the same time, there backe end might fail. This is because for both videos file name would be `output.mp4`. This is fine for demostration purposes but needs to be corrected for production.
 
 ## Helpful links
