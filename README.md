@@ -38,17 +38,16 @@ For this project, you can fill in the parameters except the number of frames, an
 ```python
 {
     "width": 704,          
-    "height": 480,         
-    "guidance_scale": 7.5,
+    "height": 448,         
+    "guidance_scale": 3.0,
     "num_inference_steps": 50,  
-    "num_frames": 161,
-    "fps": 24,            
+    "num_frames": 161,           
 }
 ```
 #### Additional Parameters
 - **prompt**: Use English language prompts, and detailed, elaborate prompts work best.
 - **negative_prompt (optional)**: what you don't want in your video.
-- You can find more information about the parameters in the model [documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/ltx_video#diffusers.LTXImageToVideoPipeline)
+- You can find more information about the parameters in the model [documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/ltx_video#diffusers.LTXImageToVideoPipeline).
 
 
 #### Input Image and Prompt

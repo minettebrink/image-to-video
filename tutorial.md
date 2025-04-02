@@ -1,18 +1,17 @@
 # Step-by-step Guide to Build a Image-to-Video Generator App
 
-This guide is how to deploy the model and how it was built.
+Here, you can find information about how to deploy the app and how it was built.
 
 ## Getting Started
 
 Follow the steps below to deploy an Image-to-Video converter to your Koyeb account.
 
-## Requirements
 To use this repository, you need:
 - A Koyeb account to build the Dockerfile and deploy to the platform. If you don't already have an account, you can sign up for free, link to [sign up](https://app.koyeb.com/auth/signup)
 - Access to CPU and GPU Instances on Koyeb.
 
 
-### Running the Application
+### Deploy the Application
 Remember to deploy the frontend first and then the backend. If you use the Deploy to Koyeb buttons, you can link your service to your forked repository to push changes.
 
 #### Frontend
@@ -21,7 +20,6 @@ Remember to deploy the frontend first and then the backend. If you use the Deplo
 #### Backend
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-backend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=%2Fback_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=gpu-nvidia-l40s&regions=eu&instances_min=0&autoscaling_sleep_idle_delay=300&env%5BALLOWED_ORIGINS%5D=https%3A%2F%2Fmale-othilia-challenge-af621831.koyeb.app&hc_grace_period%5B8000%5D=900&hc_interval%5B8000%5D=60&hc_timeout%5B8000%5D=60)
 
-## Deploy on Koyeb
 Alternatively, you can manually create the application as described below.
 
 
@@ -33,7 +31,7 @@ Select GitHub as the deployment method.
 Choose the repository containing your application code.
 
 
-#### For the frontend: 
+### For the frontend: 
 - To configure the builder, select Dockerfile and write `./Dockerfile` in the docker file location and in the Work directory `/front_end`. 
     
     <imgx src="assets/builder_frontend.png" width="500" alt="Builder Frontend">
@@ -49,7 +47,7 @@ Choose the repository containing your application code.
 - Click Deploy!
 - The repository will be pulled, built, and deployed on Koyeb. Once the deployment is complete, it will be accessible using the Koyeb subdomain for your service 🚀
 
-#### For the backend: 
+### For the backend: 
 - To configure the builder, select Dockerfile and write `./Dockerfile` in the docker file location and the Work directory `/back_end`. 
 
     <img src="assets/builder_backend.png" width="500" alt="Builder Backend">
@@ -121,6 +119,8 @@ docker run -d -p 5173:5173 --name <app-name>
 
 
 ## Workflow
+In this section, you can find a more detailed description of how to build the app.
+
 1. Set up the frontend with Svelte 
 ```
 pnpx sv create myapp
@@ -139,18 +139,18 @@ and to run it locally
 ```
 fastapi dev main.py
 ```
-3. Connect the backend with frontend
-4. Add parameters and a .mp4 file as the backend output to simulate the pipeline without the model. Run both the backend and frontend locally to see that everything works as you want.
-5. Dockerize the frontend and backend separately and test that `docker build` and `docker run` work for both.
+3. Connect the backend with frontend.
+4. Add parameters and a `.mp4` file as the backend output to simulate the pipeline without the model. Run both the backend and frontend locally to see that everything works as you want.
+5. Dockerize the frontend and backend separately, then test that `docker build` and `docker run` work correctly.
 6. Deployed frontend to Koyeb (follow these [instructions](#for-the-frontend)) and test that the frontend works as you want to.
-7. Deployed backend to Koyeb (follow these [instructions](#for-the-backend)) and test that the back- and frontend works as you want to.
-8. Download the model weights to the backend 
+7. Deployed backend to Koyeb (follow these [instructions](#for-the-backend)) and test that the back- and frontend work correctly.
+8. Add the script that downloads the model weights to the backend 
 ```python
 from huggingface_hub import hf_hub_download
 hf_hub_download(repo_id="Lightricks/LTX-Video", filename="ltx-video-2b-v0.9.1.safetensors", local_dir="/models")
 ```
-9. Test to download the model weights by deploying the backend on Koyeb, and check that you find them using the console.
-10. Load the model
+9. Deploy the backend on Koyeb and verify the model weights download correctly by checking the console..
+10. Add the script to load the model:
 ```python
 local_model_path = "/models/ltx-video-2b-v0.9.1.safetensors"
 transformer = LTXVideoTransformer3DModel.from_single_file(
@@ -162,8 +162,8 @@ pipe = LTXImageToVideoPipeline.from_pretrained(
 )
 pipe.to("cuda")
 ```
-11. Test that the model loads correctly on Koyeb in the console.
-12. If the model loads correctly in the console. You're good to test the web app.
+11. Verify that the model loads correctly on Koyeb by checking the console.
+12. If the model loads successfully in the console, proceed to test the web app.
 
 ## Troubleshooting
 
@@ -176,5 +176,5 @@ Common issues and their solutions:
 * [Koyeb Documentation](https://www.koyeb.com/docs)
 * [SvelteKit](https://kit.svelte.dev/)
 * [FastAPI](https://fastapi.tiangolo.com/)
-* [Docker](https://www.docker.com/)
+* [Docker](https://docs.docker.com/)
 * Link to the [project demo](https://youtu.be/eZfTr2Mq9d8)

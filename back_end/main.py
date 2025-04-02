@@ -57,17 +57,6 @@ async def generate_video(request: VideoGenerationRequest):
     try:
         
         image = load_image(request.image_url)
-        
-        # pipeline_params = {
-        #     "image": image,
-        #     "prompt": request.prompt,
-        #     "negative_prompt": request.negative_prompt,
-        #     "num_inference_steps": request.num_inference_steps or 50,
-        #     "guidance_scale": request.guidance_scale or 7.5,
-        #     "width": request.width,
-        #     "height": request.height,
-        #     "num_frames": 161
-        # }
 
         video = pipe(
             image=image,
