@@ -2,7 +2,7 @@
 
 A full-stack application that converts static images into videos using LTX-Video. The project consists of a SvelteKit frontend and a FastAPI backend service.
 
-You can read the project [tutorial](tutorial.md) to learn to build it yourself! 
+You can watch the short [demo](https://youtu.be/eZfTr2Mq9d8) of the project and read the [tutorial](tutorial.md) to learn how to build it yourself!
 
 ![Puppy Running](assets/demo.png)
 
