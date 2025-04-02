@@ -58,26 +58,27 @@ async def generate_video(request: VideoGenerationRequest):
         
         image = load_image(request.image_url)
         
-        pipeline_params = {
-            "image": image,
-            "prompt": request.prompt,
-            "negative_prompt": request.negative_prompt,
-            "num_inference_steps": request.num_inference_steps or 50,
-            "guidance_scale": request.guidance_scale or 7.5,
-            "width": request.width,
-            "height": request.height,
-            "num_frames": 161
-        }
+        # pipeline_params = {
+        #     "image": image,
+        #     "prompt": request.prompt,
+        #     "negative_prompt": request.negative_prompt,
+        #     "num_inference_steps": request.num_inference_steps or 50,
+        #     "guidance_scale": request.guidance_scale or 7.5,
+        #     "width": request.width,
+        #     "height": request.height,
+        #     "num_frames": 161
+        # }
 
         video = pipe(
-            image=pipeline_params["image"],
-            prompt=pipeline_params["prompt"],
-            negative_prompt=pipeline_params["negative_prompt"],
-            width=pipeline_params["width"],
-            height=pipeline_params["height"],
-            num_frames=pipeline_params["num_frames"],
-            num_inference_steps=pipeline_params["num_inference_steps"],
-        ).frames[0]
+            image=image,
+            prompt=request.prompt,
+            negative_prompt=request.negative_prompt,
+            num_inference_steps=request.num_inference_steps or 50,
+            guidance_scale=request.guidance_scale or 3.0,
+            width=request.width,
+            height=request.height,
+            num_frames=161,
+            ).frames[0]
 
         output_path = "output.mp4"
         export_to_video(video, output_path, fps=24)
