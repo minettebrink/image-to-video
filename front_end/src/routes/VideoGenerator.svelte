@@ -2,7 +2,7 @@
     let prompt: string = '';
     let imageUrl: string = '';
     let inferenceSteps: number = 50;
-    let guidanceScale: number = 3;
+    let guidanceScale: number = 3.0;
     let loading: boolean = false;
     let error: string | null = null;
     let negativePrompt: string = '';
