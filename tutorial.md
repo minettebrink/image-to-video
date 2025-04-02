@@ -174,7 +174,4 @@ Common issues and their solutions:
 * [SvelteKit](https://kit.svelte.dev/)
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [Docker](https://www.docker.com/)
-
-
-Link to demo https://youtu.be/eZfTr2Mq9d8
-
+* Link to the [project demo](https://youtu.be/eZfTr2Mq9d8)
