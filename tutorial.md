@@ -7,7 +7,7 @@ Here, you can find information about how to deploy the app and how it was built.
 Follow the steps below to deploy an Image-to-Video converter to your Koyeb account.
 
 To use this repository, you need:
-- A Koyeb account to build the Dockerfile and deploy to the platform. If you don't already have an account, you can sign up for free, link to [sign up](https://app.koyeb.com/auth/signup)
+- A Koyeb account to build the Dockerfile and deploy to the platform. If you don't already have an account, you can sign up for free, link to [sign up](https://app.koyeb.com/auth/signup).
 - Access to CPU and GPU Instances on Koyeb.
 
 
@@ -17,7 +17,7 @@ Remember to deploy the frontend first and then the backend. If you use the Deplo
 #### Frontend
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-frontend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=front_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=small&regions=par&env%5BVITE_BACKEND_URL%5D=https%3A%2F%2Fhelpful-cloe-challenge-0065b024.koyeb.app&ports=5173%3Bhttp%3B%2F&hc_protocol%5B5173%5D=tcp&hc_grace_period%5B5173%5D=5&hc_interval%5B5173%5D=30&hc_restart_limit%5B5173%5D=3&hc_timeout%5B5173%5D=5&hc_path%5B5173%5D=%2F&hc_method%5B5173%5D=get)
 
-You'll need to configure the deployment source by adding the link to this public repo: https://github.com/minettebrink/image-to-video/tree/main.
+You'll need to configure the deployment source by adding the link to the repo you forked.
 
 <img src="assets/configure_deployment_source.png" width="500" alt="Service Type">
 
@@ -29,7 +29,7 @@ To configure the builder, select Dockerfile and write `./Dockerfile` in the dock
 #### Backend
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-backend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=%2Fback_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=gpu-nvidia-l40s&regions=eu&instances_min=0&autoscaling_sleep_idle_delay=300&env%5BALLOWED_ORIGINS%5D=https%3A%2F%2Fmale-othilia-challenge-af621831.koyeb.app&hc_grace_period%5B8000%5D=900&hc_interval%5B8000%5D=60&hc_timeout%5B8000%5D=60)
 
-You'll need to configure the deployment source by adding the link to this public repo: https://github.com/minettebrink/image-to-video/tree/main.
+You'll need to configure the deployment source by adding the link to the repo you forked.
 
 <img src="assets/configure_deployment_source.png" width="500" alt="Service Type">
 

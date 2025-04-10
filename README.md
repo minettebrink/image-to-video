@@ -50,7 +50,7 @@ For this project, you can fill in the parameters except the number of frames, an
 - You can find more information about the parameters in the model [documentation](https://huggingface.co/docs/diffusers/main/en/api/pipelines/ltx_video#diffusers.LTXImageToVideoPipeline).
 
 
-#### Input Image and Prompt
+### Example Input Image and Prompt
 <img src="assets/start_image.png" width="500" alt="Puppy Running">
 
 
