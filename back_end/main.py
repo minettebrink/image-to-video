@@ -4,9 +4,7 @@ from pydantic import BaseModel
 import torch
 from diffusers import AutoencoderKLLTXVideo, LTXImageToVideoPipeline, LTXVideoTransformer3DModel
 from diffusers.utils import export_to_video, load_image
-from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 import os
 
 
