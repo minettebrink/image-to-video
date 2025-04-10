@@ -1,27 +1,25 @@
 # First stage: Download model files
 FROM python:3.11-slim as model_downloader
 
-# Install huggingface_hub and diffusers with specific versions
+# Install huggingface_hub
 RUN pip3 install --no-cache-dir huggingface_hub
-
 
 # Copy the download script
 COPY download_model.py /download_model.py
 
-# Run the Python script with increased timeout and retries
+# Run the Python script
 RUN python3 /download_model.py || (echo "Model download failed" && exit 1)
 
 # Second stage: Main application
-# Use Python 3.11 slim image as base
 FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy requirements 
 COPY requirements.txt .
 
-# Install dependencies (removed curl since it's no longer needed for healthcheck)
+# Install dependencies 
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy model files from the downloader stage and verify
