@@ -143,17 +143,17 @@ In this section, you can find a more detailed description of how to build the ap
 ```
 pnpx sv create myapp
 ```
-Select `SvelteKit minimal`, `Yes, using TypeScript syntax`, no need to add anything to the project, and `pnpm` as package manager.
+Select `SvelteKit minimal`, `Yes, using TypeScript syntax`, no need to add anything to the project, and select `pnpm` as package manager.
 ```
 cd myapp
 pnpm install
 pnpm run dev
 ```
-2. set up the backend FastApi
+2. Setup the backend in a separet directory, install FastApi,
 ```
 pip install "fastapi[standard]"
 ```
-and to run it locally
+and to run it locally.
 ```
 fastapi dev main.py
 ```
@@ -167,8 +167,8 @@ fastapi dev main.py
 from huggingface_hub import hf_hub_download
 hf_hub_download(repo_id="Lightricks/LTX-Video", filename="ltx-video-2b-v0.9.1.safetensors", local_dir="/models")
 ```
-9. Deploy the backend on Koyeb and verify the model weights download correctly by checking the console..
-10. Add the script to load the model:
+9. Deploy the backend on Koyeb and verify the model weights download correctly by checking the console.
+10. Add the part to load the model:
 ```python
 local_model_path = "/models/ltx-video-2b-v0.9.1.safetensors"
 transformer = LTXVideoTransformer3DModel.from_single_file(

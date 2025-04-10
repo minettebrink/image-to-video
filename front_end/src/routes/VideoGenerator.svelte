@@ -26,10 +26,7 @@
                 throw new Error('Backend URL is not configured. Please check your environment variables.');
             }
 
-            console.log('Using backend URL:', backendUrl);
-
-
-            // Create the request payload with exact parameter names
+            // Create the request payload with parameter names
             const payload = {
                 prompt: prompt,
                 negative_prompt: negativePrompt || null,
@@ -47,8 +44,6 @@
                 },
                 body: JSON.stringify(payload)
             });
-
-            
 
             if (!response.ok) {
                 console.log(response);

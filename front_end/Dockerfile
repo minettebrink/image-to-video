@@ -30,5 +30,4 @@ RUN pnpm build
 EXPOSE 5173
 
 # Command to run the application
-#CMD ["node", "build/index.js"]
 CMD ["pnpm", "start"]
