@@ -12,7 +12,7 @@ To use this repository, you need:
 
 
 ### Deploy the Application
-Remember to deploy the frontend first and then the backend. If you use the Deploy to Koyeb buttons, you can link your service to your forked repository to push changes.
+Remember to deploy the backend first and then the frontend. If you use the Deploy to Koyeb buttons, you can link your service to your forked repository to push changes.
 
 #### Frontend
 [![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=image-to-video-frontend&repository=minettebrink%2Fimage-to-video&branch=main&workdir=front_end&builder=dockerfile&dockerfile=.%2FDockerfile&instance_type=small&regions=par&env%5BVITE_BACKEND_URL%5D=https%3A%2F%2Fhelpful-cloe-challenge-0065b024.koyeb.app&ports=5173%3Bhttp%3B%2F&hc_protocol%5B5173%5D=tcp&hc_grace_period%5B5173%5D=5&hc_interval%5B5173%5D=30&hc_restart_limit%5B5173%5D=3&hc_timeout%5B5173%5D=5&hc_path%5B5173%5D=%2F&hc_method%5B5173%5D=get)
